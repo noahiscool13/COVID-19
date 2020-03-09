@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 import matplotlib
+
 matplotlib.use('TkAgg')
 
 
@@ -19,40 +20,40 @@ class Country:
         self.disease.run(self)
 
     def alive_population(self):
-        return self.population-self.dead
+        return self.population - self.dead
 
     def total_infected(self):
         return sum(self.infected)
 
     def reported_invected(self):
-        return sum(self.infected[len(self.infected)//2:])
+        return sum(self.infected[len(self.infected) // 2:])
 
 
 class Disease:
     def __init__(self, sick_time, ineffectiveness, mortality):
         self.sick_time = sick_time
         self.ineffectiveness = ineffectiveness
-        self.per_day_chance = ineffectiveness/sick_time
+        self.per_day_chance = ineffectiveness / sick_time
         self.mortality = mortality
 
     def run(self, country):
-        un_risistant_fraction = (country.alive_population()-country.resistant)/country.alive_population()
-        new_sick = country.total_infected()*self.per_day_chance*un_risistant_fraction
-        country.infected = [new_sick]+country.infected[0:-1]
+        un_risistant_fraction = (country.alive_population() - country.resistant) / country.alive_population()
+        new_sick = country.total_infected() * self.per_day_chance * un_risistant_fraction
+        country.infected = [new_sick] + country.infected[0:-1]
         country.resistant += new_sick
 
-        deads = country.total_infected()*self.mortality/self.sick_time
+        deads = country.total_infected() * self.mortality / self.sick_time
         country.dead += deads
         country.resistant -= deads
 
-        p = len(country.infected)-1
+        p = len(country.infected) - 1
 
-        while deads>0:
+        while deads > 0:
             diff = deads - country.infected[p]
             if diff > 0:
                 country.infected[p] = 0
                 deads = diff
-                p-=1
+                p -= 1
             else:
                 country.infected[p] -= deads
                 deads = 0
@@ -60,7 +61,15 @@ class Disease:
 
 if __name__ == '__main__':
     # Test simulation
-    # 20 days of infection, r0=2.28, 2% mortality rate
+    ### Parameters for the simulation: ###
+    # Sick time is 20 days               #
+    # r0 = 2.28                          #
+    # Mortiality rate is 2%              #
+    # Population of 17 million           #
+    ######################################
+    # Sources:
+    # https://www.ncbi.nlm.nih.gov/pubmed/32097725 For r0
+    # https://www.who.int/docs/default-source/coronaviruse/who-china-joint-mission-on-covid-19-final-report.pdf For mortality rate
     covid_19 = Disease(20, 2.28, 0.02)
     netherlands = Country(17e6, covid_19)
 
@@ -74,7 +83,6 @@ if __name__ == '__main__':
         reported_hist.append(netherlands.reported_invected())
         netherlands.day()
         netherlands.infect(10)
-
 
     for _ in range(400):
         sick_hist.append(netherlands.total_infected())
