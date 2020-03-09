@@ -2,6 +2,7 @@ from matplotlib import pyplot as plt
 import matplotlib
 matplotlib.use('TkAgg')
 
+
 class Country:
     def __init__(self, population, disease):
         self.population = population
@@ -59,8 +60,9 @@ class Disease:
 
 if __name__ == '__main__':
     # Test simulation
-    covid_19 = Disease(20,2,0.02)
-    netherlands = Country(17e6,covid_19)
+    # 20 days of infection, r0=2.28, 2% mortality rate
+    covid_19 = Disease(20, 2.28, 0.02)
+    netherlands = Country(17e6, covid_19)
 
     sick_hist = []
     dead_hist = []
@@ -83,7 +85,8 @@ if __name__ == '__main__':
     dead_hist.append(netherlands.dead)
     reported_hist.append(netherlands.reported_invected())
 
-    plt.plot(sick_hist)
-    plt.plot(dead_hist)
-    plt.plot(reported_hist)
+    plt.plot(sick_hist, label="Real cases")
+    plt.plot(dead_hist, label="Deaths")
+    plt.plot(reported_hist, label="Official cases")
+    plt.legend()
 plt.show()
